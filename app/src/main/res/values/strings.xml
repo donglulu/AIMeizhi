@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AiMeiZhi</string>
+    <string name="title_activity_show_big_pic">ShowBigPicActivity</string>
+    <string name="title_activity_set_of_pic">SetOfPicActivity</string>
+</resources>
