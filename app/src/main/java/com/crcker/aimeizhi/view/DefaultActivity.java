@@ -1,4 +1,4 @@
-package com.crcker.aimeizhi.fragment;
+package com.crcker.aimeizhi.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,88 +6,102 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.crcker.aimeizhi.R;
 import com.crcker.aimeizhi.adapter.RecyclerAdapter;
-import com.crcker.aimeizhi.base.BaseFragment;
+import com.crcker.aimeizhi.base.BaseActivity;
 import com.crcker.aimeizhi.bean.PicInfoBean;
-import com.crcker.aimeizhi.constant.Constant;
 import com.crcker.aimeizhi.model.GetDataFromHtml;
-import com.crcker.aimeizhi.view.SetOfPicActivity;
 
 import java.util.ArrayList;
 
-/**
- * 热门分类
- */
-public class HotFragment extends BaseFragment {
+public class DefaultActivity extends BaseActivity {
     private RecyclerView mRecyclerView;
-    private RecyclerAdapter mAdapter;
-    private GetDataFromHtml dataFromHtml;
 
+    private RecyclerAdapter mAdapter;
+
+    private GetDataFromHtml dataFromHtml = new GetDataFromHtml();
     //当前页
     private int pages = 1;
 
     private ArrayList<PicInfoBean> picInfoBeen;
     //是否是第一次进入
     private boolean isFrist = true;
+    //续加载的数据
+    private Bundle mBundle;
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_main, container, false);
-        mRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(mRecyclerView.getContext(), 2));
-        update();
-        return v;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_default);
+        initView();
+        initData();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(mBundle.getString("title"));
+        setSupportActionBar(toolbar);
+
     }
+
+    private void initData() {
+        mBundle = getIntent().getExtras();
+        update();
+    }
+
 
     private void update() {
         picInfoBeen = new ArrayList<>();
-        UpdataTask updateTextTask = new UpdataTask(getActivity(), Constant.HOT_ADDRESS);
+        UpdataTask updateTextTask = new UpdataTask(this, pages);
         updateTextTask.execute();
 
 
     }
 
-    public static HotFragment getInstance() {
-        HotFragment fra = new HotFragment();
-        return fra;
-    }
 
-    class UpdataTask extends AsyncTask<Void, Integer, Integer> {
+    class UpdataTask extends AsyncTask<Void, Integer, ArrayList<PicInfoBean>> {
         private Context context;
-        private String url;
 
-        UpdataTask(Context context, String url) {
+
+        UpdataTask(Context context, int pages) {
             dataFromHtml = new GetDataFromHtml();
             this.context = context;
-            this.url = url;
+
         }
+
 
         /**
          * 后台运行的方法，可以运行非UI线程，可以执行耗时的方法
          */
         @Override
-        protected Integer doInBackground(Void... params) {
-            picInfoBeen = dataFromHtml.getHomeData(pages, isFrist, url);
-            return null;
+        protected ArrayList<PicInfoBean> doInBackground(Void... params) {
+
+            return dataFromHtml.getHomeData(pages, isFrist, mBundle.getString("url"));
         }
 
         /**
          * 运行在ui线程中，在doInBackground()执行完毕后执行
          */
         @Override
-        protected void onPostExecute(Integer integer) {
+        protected void onPostExecute(final ArrayList<PicInfoBean> been) {
+
+            super.onPostExecute(picInfoBeen);
+
+
+            picInfoBeen.addAll(been);
+
+            Log.d("msg", picInfoBeen.size() + "个数");
+
             mAdapter = new RecyclerAdapter(mRecyclerView.getContext(), picInfoBeen);
             mRecyclerView.setAdapter(mAdapter);
+
+
             mAdapter.setOnItemClickListener(new RecyclerAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
-                    Intent intent = new Intent(getActivity(), SetOfPicActivity.class);
+                    Intent intent = new Intent(DefaultActivity.this, SetOfPicActivity.class);
                     intent.putExtra("url", picInfoBeen.get(position).getUrl());
                     intent.putExtra("title", picInfoBeen.get(position).getPicTitle());
                     startActivity(intent);
@@ -99,9 +113,16 @@ public class HotFragment extends BaseFragment {
                 }
             });
 
+
         }
 
     }
 
 
+    private void initView() {
+        mRecyclerView = (RecyclerView) findViewById(R.id.rl_default);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+    }
 }

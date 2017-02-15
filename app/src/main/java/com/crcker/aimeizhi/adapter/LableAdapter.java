@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.crcker.aimeizhi.R;
 import com.crcker.aimeizhi.bean.LableInfoBean;
-import com.crcker.aimeizhi.bean.PicInfoBean;
 
 import java.util.ArrayList;
 
@@ -20,9 +19,9 @@ import java.util.ArrayList;
  * Date: 17/1/28 22:31
  */
 
-public class LableAdapter extends RecyclerView.Adapter<LableAdapter.MyViewHolder> {
+public class LableAdapter extends RecyclerView.Adapter<LableAdapter.MyViewHolder> implements View.OnClickListener {
     private Context mContext;
-
+    private OnRecyclerViewItemClickListener mOnItemClickListener = null;
     private ArrayList<LableInfoBean> lableInfoBeen;
 
     public LableAdapter(Context context, ArrayList<LableInfoBean> datas) {
@@ -32,26 +31,46 @@ public class LableAdapter extends RecyclerView.Adapter<LableAdapter.MyViewHolder
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        MyViewHolder holder = new MyViewHolder(LayoutInflater.from(
-                mContext).inflate(R.layout.lable_item, parent, false));
+        View view = LayoutInflater.from(mContext).inflate(R.layout.lable_item, parent, false);
+        view.setOnClickListener(this);
+        MyViewHolder holder = new MyViewHolder(view);
+
         return holder;
+    }
+
+
+    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
+        this.mOnItemClickListener = listener;
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+
         holder.tv.setText(lableInfoBeen.get(position).getTitle() + "(" + lableInfoBeen.get(position).getPicCount() + ")");
 
         Glide.with(mContext).load(lableInfoBeen.get(position).getLable_pic_url())
                 .into(holder.iv);
-
+        holder.itemView.setTag(position);
     }
 
     @Override
     public int getItemCount() {
+
         return lableInfoBeen.size();
     }
 
+    @Override
+    public void onClick(View view) {
+
+        if (mOnItemClickListener != null) {
+
+            //注意这里使用getTag方法获取数据
+            mOnItemClickListener.onItemClick(view, (Integer) view.getTag());
+        }
+    }
+
     class MyViewHolder extends RecyclerView.ViewHolder {
+
         TextView tv;
         ImageView iv;
 
@@ -60,5 +79,10 @@ public class LableAdapter extends RecyclerView.Adapter<LableAdapter.MyViewHolder
             tv = (TextView) view.findViewById(R.id.tv_lable_item);
             iv = (ImageView) view.findViewById(R.id.iv_lable_item);
         }
+    }
+
+    public static interface OnRecyclerViewItemClickListener {
+
+        void onItemClick(View view, int position);
     }
 }

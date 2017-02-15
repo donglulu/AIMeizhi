@@ -1,50 +1,85 @@
 package com.crcker.aimeizhi.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.crcker.aimeizhi.R;
 import com.crcker.aimeizhi.adapter.RecyclerAdapter;
 import com.crcker.aimeizhi.base.BaseFragment;
 import com.crcker.aimeizhi.bean.PicInfoBean;
+import com.crcker.aimeizhi.constant.Constant;
 import com.crcker.aimeizhi.model.GetDataFromHtml;
+import com.crcker.aimeizhi.view.SetOfPicActivity;
 
 import java.util.ArrayList;
 
 /**
- * Created by hugeterry(http://hugeterry.cn)
- * Date: 17/1/28 17:36
+ * 随机
  */
 public class RecommedFragment extends BaseFragment {
     private RecyclerView mRecyclerView;
     private RecyclerAdapter mAdapter;
+
     private GetDataFromHtml dataFromHtml;
-    private static final String ARG_TITLE = "title";
-    private String mTitle;
+
+    //当前页
+    private int pages = 1;
+
+    //是否是第一次进入
+    private boolean isFrist = true;
 
     private ArrayList<PicInfoBean> picInfoBeen;
+
+    private SwipeRefreshLayout mRefreshLayout;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
+
+        inintView(v);
+        update();
+        return v;
+    }
+
+    private void inintView(View v) {
+
+        mRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.refreshLayout);
+
         mRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
         mRecyclerView.setLayoutManager(new GridLayoutManager(mRecyclerView.getContext(), 2));
 
-        return v;
+
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                update();
+            }
+        });
+    }
+
+
+    private void update() {
+        picInfoBeen = new ArrayList<>();
+        UpdataTask updateTextTask = new UpdataTask(getActivity(), Constant.HOT_ADDRESS);
+        updateTextTask.execute();
+
+
     }
 
     public static RecommedFragment getInstance() {
         RecommedFragment fra = new RecommedFragment();
         return fra;
     }
+
     class UpdataTask extends AsyncTask<Void, Integer, Integer> {
         private Context context;
         private String url;
@@ -55,20 +90,13 @@ public class RecommedFragment extends BaseFragment {
             this.url = url;
         }
 
-        /**
-         * 运行在UI线程中，在调用doInBackground()之前执行
-         */
-        @Override
-        protected void onPreExecute() {
-            Toast.makeText(context, "开始执行", Toast.LENGTH_SHORT).show();
-        }
 
         /**
          * 后台运行的方法，可以运行非UI线程，可以执行耗时的方法
          */
         @Override
         protected Integer doInBackground(Void... params) {
-            //picInfoBeen = dataFromHtml.getHomeData();
+            picInfoBeen = dataFromHtml.getRandomData();
             return null;
         }
 
@@ -77,17 +105,33 @@ public class RecommedFragment extends BaseFragment {
          */
         @Override
         protected void onPostExecute(Integer integer) {
-           
-            mRecyclerView.setAdapter(mAdapter = new RecyclerAdapter(mRecyclerView.getContext(), picInfoBeen));
+
+
+            if (mRefreshLayout != null) {
+
+                mRefreshLayout.setRefreshing(false);
+
+            }
+
+            mAdapter = new RecyclerAdapter(mRecyclerView.getContext(), picInfoBeen);
+            mRecyclerView.setAdapter(mAdapter);
+            mAdapter.setOnItemClickListener(new RecyclerAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    Intent intent = new Intent(getActivity(), SetOfPicActivity.class);
+                    intent.putExtra("url", picInfoBeen.get(position).getUrl());
+                    intent.putExtra("title", picInfoBeen.get(position).getPicTitle());
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onItemLongClick(View view, int position) {
+
+                }
+            });
 
         }
 
-        /**
-         * 在publishProgress()被调用以后执行，publishProgress()用于更新进度
-         */
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-        }
     }
 
 

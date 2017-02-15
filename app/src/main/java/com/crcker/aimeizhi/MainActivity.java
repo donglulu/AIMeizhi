@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private CoordinatorTabLayout mCoordinatorTabLayout;
     private int[] mImageArray, mColorArray;
     private ArrayList<Fragment> mFragments;
-    private final String[] mTitles = {"首页", "分类", "热门", "推荐"};
+    private final String[] mTitles = {"首页", "分类", "热门", "随机"};
     private ViewPager mViewPager;
 
 
@@ -59,13 +59,13 @@ public class MainActivity extends AppCompatActivity {
                                 loadImages(imageView, "http://img.mmjpg.com/2016/557/1.jpg");
                                 break;
                             case 1:
-                                loadImages(imageView, "http://img.mmjpg.com/2016/557/1.jpg");
+                                loadImages(imageView, "http://img.mmjpg.com/2016/557/18.jpg");
                                 break;
                             case 2:
-                                loadImages(imageView, "http://img.mmjpg.com/small/2016/656.jpg");
+                                loadImages(imageView, "http://img.mmjpg.com/2016/557/21.jpg");
                                 break;
                             case 3:
-                                loadImages(imageView, "http://img.mmjpg.com/small/2016/549.jpg");
+                                loadImages(imageView, "http://img.mmjpg.com/2016/557/29.jpg");
                                 break;
                             default:
                                 break;

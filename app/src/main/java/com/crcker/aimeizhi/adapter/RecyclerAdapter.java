@@ -13,59 +13,106 @@ import com.crcker.aimeizhi.R;
 import com.crcker.aimeizhi.bean.PicInfoBean;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by hugeterry(http://hugeterry.cn)
  * Date: 17/1/28 22:31
  */
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> implements View.OnClickListener {
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
-    private OnRecyclerViewItemClickListener mOnItemClickListener = null;
+
+    private OnItemClickListener onItemClickListener;
     private ArrayList<PicInfoBean> picInfoBeen;
+
+
+    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_FOOTER = 1;
 
     public RecyclerAdapter(Context context, ArrayList<PicInfoBean> datas) {
         mContext = context;
         picInfoBeen = datas;
     }
 
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+
+        void onItemLongClick(View view, int position);
+    }
+
+
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(
-                mContext).inflate(R.layout.item_main, parent, false);
-        view.setOnClickListener(this);
-        MyViewHolder holder = new MyViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == TYPE_ITEM) {
 
-        return holder;
+            View view = LayoutInflater.from(mContext).inflate(R.layout.item_main, parent, false);
+            return new MyViewHolder(view);
+
+        } else if (viewType == TYPE_FOOTER) {
+
+
+            View view = LayoutInflater.from(mContext).inflate(R.layout.item_foot, parent, false);
+            return new FootViewHolder(view);
+        }
+
+
+        return null;
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.tv.setText(picInfoBeen.get(position).getPicTitle());
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof MyViewHolder) {
+            //holder.tv.setText(data.get(position));
+            if (onItemClickListener != null) {
 
-        Glide.with(mContext).load(picInfoBeen.get(position).getPicUrl())
-                .into(holder.iv);
-        holder.itemView.setTag(position);
+                ((MyViewHolder) holder).tv.setText(picInfoBeen.get(position).getPicTitle());
+
+                Glide.with(mContext).load(picInfoBeen.get(position).getPicUrl())
+                        .into(((MyViewHolder) holder).iv);
+                holder.itemView.setTag(position);
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int position = holder.getLayoutPosition();
+                        onItemClickListener.onItemClick(holder.itemView, position);
+                    }
+                });
+
+                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        int position = holder.getLayoutPosition();
+                        onItemClickListener.onItemLongClick(holder.itemView, position);
+                        return false;
+                    }
+                });
+            }
+        }
     }
 
+    @Override
+    public int getItemViewType(int position) {
 
-    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
-        this.mOnItemClickListener = listener;
+        if (position + 1 == getItemCount()) {
+            return TYPE_FOOTER;
+        } else {
+            return TYPE_ITEM;
+        }
     }
+
 
     @Override
     public int getItemCount() {
         return picInfoBeen.size();
     }
 
-    @Override
-    public void onClick(View v) {
-        if (mOnItemClickListener != null) {
-            //注意这里使用getTag方法获取数据
-            mOnItemClickListener.onItemClick(v, (Integer) v.getTag());
-        }
-    }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tv;
@@ -79,7 +126,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     }
 
 
-    public static interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view, int position);
+    static class FootViewHolder extends RecyclerView.ViewHolder {
+
+        public FootViewHolder(View view) {
+            super(view);
+        }
     }
 }

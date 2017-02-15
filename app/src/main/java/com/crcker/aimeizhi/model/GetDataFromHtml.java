@@ -1,7 +1,6 @@
 package com.crcker.aimeizhi.model;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.crcker.aimeizhi.bean.LableInfoBean;
 import com.crcker.aimeizhi.bean.PicInfoBean;
@@ -31,16 +30,18 @@ public class GetDataFromHtml {
 
 
     //获取首页数据
-    public ArrayList<PicInfoBean> getHomeData(int pages, boolean b) {
+    public ArrayList<PicInfoBean> getHomeData(int pages, boolean b, String url) {
 
 
         Document content = null;
 
         try {
             if (b == true) {
-                content = Jsoup.connect(Constant.RECOMMEND_ADDRESS).timeout(5000).post();
+
+                content = Jsoup.connect(url).timeout(5000).post();
             } else {
-                content = Jsoup.connect(Constant.PAGE_ADDRSS + pages).timeout(5000).post();
+
+                content = Jsoup.connect(url + pages).timeout(5000).post();
             }
 
 
@@ -63,6 +64,7 @@ public class GetDataFromHtml {
             picInfoBeens = new ArrayList<>();
         }
 
+        picInfoBeens.clear();
 
 
         for (Element li : Li) {
@@ -163,6 +165,51 @@ public class GetDataFromHtml {
         }
 
         return setOfPicInfoBeens;
+    }
+
+
+    //随机数据
+    public ArrayList<PicInfoBean> getRandomData() {
+
+
+        Document content = null;
+
+        try {
+
+            content = Jsoup.connect("http://www.mmjpg.com/mm/871").timeout(5000).post();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Elements element = content.select("div.hot");
+
+        Document picContent = Jsoup.parse(element.toString());
+
+        Elements Li = picContent.getElementsByTag("dd");
+
+        PicInfoBean picInfoBean;
+
+        if (picInfoBeens == null) {
+
+            picInfoBeens = new ArrayList<>();
+        }
+
+
+        for (Element li : Li) {
+            picInfoBean = new PicInfoBean();
+            //地址
+            picInfoBean.setUrl(li.select("a").attr("href"));
+            //标题
+            picInfoBean.setPicTitle(li.select("img").attr("alt"));
+            //缩略图
+            picInfoBean.setPicUrl(li.select("img").attr("src"));
+            picInfoBeens.add(picInfoBean);
+        }
+
+
+        return picInfoBeens;
     }
 
 }

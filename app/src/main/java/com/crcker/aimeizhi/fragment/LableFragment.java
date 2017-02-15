@@ -1,6 +1,7 @@
 package com.crcker.aimeizhi.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,12 +16,14 @@ import com.crcker.aimeizhi.adapter.LableAdapter;
 import com.crcker.aimeizhi.base.BaseFragment;
 import com.crcker.aimeizhi.bean.LableInfoBean;
 import com.crcker.aimeizhi.model.GetDataFromHtml;
+import com.crcker.aimeizhi.view.DefaultActivity;
 
 import java.util.ArrayList;
 
 /**
- * Created by hugeterry(http://hugeterry.cn)
- * Date: 17/1/28 17:36
+ * Created by crcker
+ * <p>
+ * 分类
  */
 public class LableFragment extends BaseFragment {
     private RecyclerView mRecyclerView;
@@ -79,6 +82,18 @@ public class LableFragment extends BaseFragment {
         protected void onPostExecute(Integer integer) {
             mAdapter = new LableAdapter(mRecyclerView.getContext(), lableInfoBeens);
             mRecyclerView.setAdapter(mAdapter);
+
+            mAdapter.setOnItemClickListener(new LableAdapter.OnRecyclerViewItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    Intent intent = new Intent(getActivity(), DefaultActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("title", lableInfoBeens.get(position).getTitle());
+                    bundle.putString("url", lableInfoBeens.get(position).getUrl());
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            });
 
         }
 

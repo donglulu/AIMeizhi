@@ -3,13 +3,9 @@ package com.crcker.aimeizhi.view;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import com.crcker.aimeizhi.R;
@@ -76,6 +72,16 @@ public class SetOfPicActivity extends BaseActivity {
             setOfPicAdapter = new SetOfPicAdapter(SetOfPicActivity.this, setOfPicInfoBeen);
 
             mRecyclerView.setAdapter(setOfPicAdapter);
+
+            setOfPicAdapter.setOnItemClickListener(new SetOfPicAdapter.OnRecyclerViewItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    Intent intent= new Intent(SetOfPicActivity.this,ShowBigPicActivity.class);
+                    intent.putExtra("url",setOfPicInfoBeen.get(position).getPic_url());
+                    startActivity(intent);
+
+                }
+            });
 
             super.onPostExecute(integer);
 

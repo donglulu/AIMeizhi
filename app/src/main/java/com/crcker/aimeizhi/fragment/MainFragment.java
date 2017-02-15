@@ -1,33 +1,28 @@
 package com.crcker.aimeizhi.fragment;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.crcker.aimeizhi.R;
 import com.crcker.aimeizhi.adapter.RecyclerAdapter;
 import com.crcker.aimeizhi.bean.PicInfoBean;
+import com.crcker.aimeizhi.constant.Constant;
 import com.crcker.aimeizhi.model.GetDataFromHtml;
 import com.crcker.aimeizhi.view.SetOfPicActivity;
-import com.crcker.aimeizhi.view.ShowBigPicActivity;
-import com.lcodecore.tkrefreshlayout.RefreshListenerAdapter;
-import com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout;
 
 import java.util.ArrayList;
 
 /**
- * Created by hugeterry(http://hugeterry.cn)
- * Date: 17/1/28 17:36
+ * 首页
  */
 public class MainFragment extends Fragment {
     private RecyclerView mRecyclerView;
@@ -40,98 +35,25 @@ public class MainFragment extends Fragment {
     //是否是第一次进入
     private boolean isFrist = true;
 
-    private TwinklingRefreshLayout refreshLayout;
+    boolean isLoading;
+    private SwipeRefreshLayout mRefreshLayout;
 
-    public static MainFragment getInstance() {
-        MainFragment fra = new MainFragment();
-        return fra;
-    }
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
 
+            if (mAdapter == null) {
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_main, container, false);
-        initView(v);
-        mRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
-        final GridLayoutManager layoutManager = new GridLayoutManager(mRecyclerView.getContext(), 2);
-        mRecyclerView.setLayoutManager(layoutManager);
-        update();
-
-
-        return v;
-    }
-
-    private void initView(View v) {
-
-        refreshLayout = (TwinklingRefreshLayout) v.findViewById(R.id.refreshLayout);
-
-        refreshLayout.setOnRefreshListener(new RefreshListenerAdapter() {
-            @Override
-            public void onRefresh(final TwinklingRefreshLayout refreshLayout) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.finishRefreshing();
-                    }
-                }, 2000);
+                mAdapter = new RecyclerAdapter(mRecyclerView.getContext(), picInfoBeen);
+                mRecyclerView.setAdapter(mAdapter);
             }
 
-            @Override
-            public void onLoadMore(final TwinklingRefreshLayout refreshLayout) {
-                update();
-                pages++;
-                isFrist = false;
-            }
-        });
-    }
+            mAdapter.notifyDataSetChanged();
+            mRefreshLayout.setRefreshing(false);
+            mAdapter.notifyItemRemoved(mAdapter.getItemCount());
 
 
-    private void update() {
-        picInfoBeen = new ArrayList<>();
-        UpdataTask updateTextTask = new UpdataTask(getActivity(), pages);
-        updateTextTask.execute();
-
-
-    }
-
-    class UpdataTask extends AsyncTask<Void, Integer, ArrayList<PicInfoBean>> {
-        private Context context;
-
-
-        UpdataTask(Context context, int pages) {
-            dataFromHtml = new GetDataFromHtml();
-            this.context = context;
-
-        }
-
-
-        /**
-         * 后台运行的方法，可以运行非UI线程，可以执行耗时的方法
-         */
-        @Override
-        protected ArrayList<PicInfoBean> doInBackground(Void... params) {
-
-            return dataFromHtml.getHomeData(pages, isFrist);
-        }
-
-        /**
-         * 运行在ui线程中，在doInBackground()执行完毕后执行
-         */
-        @Override
-        protected void onPostExecute(final ArrayList<PicInfoBean> been) {
-
-            super.onPostExecute(picInfoBeen);
-
-
-            picInfoBeen.addAll(been);
-            refreshLayout.finishLoadmore();
-            Log.d("msg", picInfoBeen.size() + "个数");
-
-            mAdapter = new RecyclerAdapter(mRecyclerView.getContext(), picInfoBeen);
-            mRecyclerView.setAdapter(mAdapter);
-
-
-            mAdapter.setOnItemClickListener(new RecyclerAdapter.OnRecyclerViewItemClickListener() {
+            mAdapter.setOnItemClickListener(new RecyclerAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
                     Intent intent = new Intent(getActivity(), SetOfPicActivity.class);
@@ -139,17 +61,110 @@ public class MainFragment extends Fragment {
                     intent.putExtra("title", picInfoBeen.get(position).getPicTitle());
                     startActivity(intent);
                 }
+
+                @Override
+                public void onItemLongClick(View view, int position) {
+
+                }
             });
 
-
         }
+    };
 
-        /**
-         * 在publishProgress()被调用以后执行，publishProgress()用于更新进度
-         */
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_main, container, false);
+        initView(v);
+        new MyThread().start();
+        return v;
+    }
+
+    private void initView(View v) {
+        picInfoBeen = new ArrayList<>();
+        mRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
+        final GridLayoutManager layoutManager = new GridLayoutManager(mRecyclerView.getContext(), 2);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+
+        mRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.refreshLayout);
+
+        mRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshLayout.setRefreshing(true);
+            }
+        });
+
+
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                new MyThread().start();
+
+            }
+        });
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+                if (lastVisibleItemPosition + 1 == mAdapter.getItemCount()) {
+
+
+                    boolean isRefreshing = mRefreshLayout.isRefreshing();
+
+                    if (isRefreshing) {
+
+                        mAdapter.notifyItemRemoved(mAdapter.getItemCount());
+                        return;
+                    }
+                    pages++;
+                    isLoading = true;
+                    isFrist = false;
+                    new MyThread().start();
+                }
+            }
+        });
+
+
+    }
+
+
+    class MyThread extends Thread {
         @Override
-        protected void onProgressUpdate(Integer... values) {
+        public void run() {
+            super.run();
+            if (isFrist == true) {
+
+                picInfoBeen.addAll(dataFromHtml.getHomeData(pages, isFrist, Constant.SERVER_ADDRESS));
+                handler.sendEmptyMessage(0);
+            } else {
+                isLoading = false;
+
+                picInfoBeen.addAll(dataFromHtml.getHomeData(pages, isFrist, Constant.PAGE_ADDRSS));
+
+                handler.sendEmptyMessage(0);
+            }
+
+
         }
     }
+
+    public static MainFragment getInstance() {
+        MainFragment fra = new MainFragment();
+        return fra;
+    }
+
 
 }

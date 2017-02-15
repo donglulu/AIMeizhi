@@ -1,37 +1,29 @@
 package com.crcker.aimeizhi.view;
 
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.crcker.aimeizhi.R;
-import com.github.piasy.biv.BigImageViewer;
-import com.github.piasy.biv.loader.fresco.FrescoImageLoader;
-import com.github.piasy.biv.view.BigImageView;
+import com.crcker.aimeizhi.base.BaseActivity;
+import com.crcker.aimeizhi.view.ScaleVIew.ScaleView;
+import com.squareup.picasso.Picasso;
 
-public class ShowBigPicActivity extends AppCompatActivity {
+public class ShowBigPicActivity extends BaseActivity {
 
     private String url = "http://img.mmjpg.com/2016/557/1.jpg";
+    private ScaleView mImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        BigImageViewer.initialize(FrescoImageLoader.with(ShowBigPicActivity.this));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_big_pic);
+        mImageView = (ScaleView) findViewById(R.id.iv_bigpic);
 
+        Picasso.with(this).load(getIntent().getStringExtra("url")).into(mImageView);
 
-        BigImageView bigImageView = (BigImageView) findViewById(R.id.mBigImage);
-
-        bigImageView.showImage(
-                Uri.parse(url),
-                Uri.parse(url)
-        );
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("大图");
         setSupportActionBar(toolbar);
 
     }
