@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
@@ -7,30 +8,33 @@
 
     <android.support.v7.widget.CardView
         android:id="@+id/cardView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="8px"
+        app:cardElevation="8px"
+        app:contentPadding="5px">
 
         <LinearLayout
-            android:padding="10dp"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="5dp">
 
             <ImageView
                 android:id="@+id/iv_lable_item"
                 android:layout_width="150dp"
-                android:layout_height="120dp"
-                android:src="@mipmap/bg_other"
+                android:layout_height="100dp"
                 android:scaleType="fitXY"
-                />
+                android:src="@mipmap/bg_other" />
 
             <TextView
-                android:layout_marginTop="5dp"
                 android:id="@+id/tv_lable_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:gravity="center"
                 android:maxEms="10"
                 android:singleLine="true"

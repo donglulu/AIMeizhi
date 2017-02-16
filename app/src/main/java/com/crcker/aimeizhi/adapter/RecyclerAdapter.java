@@ -74,12 +74,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 ((MyViewHolder) holder).tv.setText(picInfoBeen.get(position).getPicTitle());
 
-                ((MyViewHolder) holder).cardView.setRadius(8);//设置图片圆角的半径大小
-
-                ((MyViewHolder) holder).cardView.setCardElevation(8);//设置阴影部分大小
-
-                ((MyViewHolder) holder).cardView.setContentPadding(5, 5, 5, 5);//设置图片距离阴影大小
-
                 Glide.with(mContext).load(picInfoBeen.get(position).getPicUrl())
                         .into(((MyViewHolder) holder).iv);
                 holder.itemView.setTag(position);

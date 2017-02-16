@@ -49,11 +49,6 @@ public class LableAdapter extends RecyclerView.Adapter<LableAdapter.MyViewHolder
 
         holder.tv.setText(lableInfoBeen.get(position).getTitle() + "(" + lableInfoBeen.get(position).getPicCount() + ")");
 
-        holder.cardView.setRadius(8);//设置图片圆角的半径大小
-
-        holder.cardView.setCardElevation(8);//设置阴影部分大小
-
-        holder.cardView.setContentPadding(5, 5, 5, 5);//设置图片距离阴影大小
         Glide.with(mContext).load(lableInfoBeen.get(position).getLable_pic_url())
                 .into(holder.iv);
         holder.itemView.setTag(position);

@@ -59,13 +59,13 @@ public class MainActivity extends AppCompatActivity {
                     public void loadHeaderImages(ImageView imageView, TabLayout.Tab tab) {
                         switch (tab.getPosition()) {
                             case 0:
-                                loadImages(imageView, "http://img.mmjpg.com/2016/557/1.jpg");
+                                loadImages(imageView, "http://img.mmjpg.com/2016/557/21.jpg");
                                 break;
                             case 1:
                                 loadImages(imageView, "http://img.mmjpg.com/2016/557/18.jpg");
                                 break;
                             case 2:
-                                loadImages(imageView, "http://img.mmjpg.com/2016/557/21.jpg");
+                                loadImages(imageView, "http://img.mmjpg.com/2016/557/1.jpg");
                                 break;
                             case 3:
                                 loadImages(imageView, "http://img.mmjpg.com/2016/557/29.jpg");

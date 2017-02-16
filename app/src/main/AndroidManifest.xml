@@ -14,12 +14,19 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:replace="android:icon,android:label">
         >
-        <activity android:name=".MainActivity">
+
+        <activity android:name=".view.Splash">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+
+        <activity android:name=".MainActivity">
+
         </activity>
         <activity
             android:name=".view.ShowBigPicActivity"
