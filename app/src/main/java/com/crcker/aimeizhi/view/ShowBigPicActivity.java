@@ -1,16 +1,14 @@
 package com.crcker.aimeizhi.view;
 
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.bumptech.glide.Glide;
 import com.crcker.aimeizhi.R;
-import com.crcker.aimeizhi.base.BaseActivity;
 import com.crcker.aimeizhi.view.ScaleVIew.ScaleView;
-import com.squareup.picasso.Picasso;
 
 public class ShowBigPicActivity extends AppCompatActivity {
 
@@ -26,7 +24,7 @@ public class ShowBigPicActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_big_pic);
         mImageView = (ScaleView) findViewById(R.id.iv_bigpic);
 
-        Picasso.with(this).load(getIntent().getStringExtra("url")).into(mImageView);
+        Glide.with(this).load(getIntent().getStringExtra("url")).into(mImageView);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

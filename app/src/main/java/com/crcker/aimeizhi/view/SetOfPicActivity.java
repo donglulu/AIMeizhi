@@ -27,8 +27,6 @@ import com.crcker.aimeizhi.utils.DownloadUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 /*
@@ -45,8 +43,13 @@ public class SetOfPicActivity extends BaseActivity implements View.OnClickListen
 
     private TextView tv_title;
 
-    private ImageView iv_down;
+    private ImageView iv_downMore;
 
+    //是否显示下载提示框
+    private boolean isShowDialog = true;
+
+
+    private ImageView iv_down;
 
     //文件保存位置
     String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/爱妹纸";
@@ -59,6 +62,7 @@ public class SetOfPicActivity extends BaseActivity implements View.OnClickListen
         setContentView(R.layout.activity_set_of_pic);
         initView();
         initData();
+        checkpermission();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -77,8 +81,10 @@ public class SetOfPicActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void initView() {
-        iv_down = (ImageView) findViewById(R.id.iv_download_more);
-        iv_down.setOnClickListener(this);
+
+
+        iv_downMore = (ImageView) findViewById(R.id.iv_download_more);
+        iv_downMore.setOnClickListener(this);
         tv_title = (TextView) findViewById(R.id.tv_toolbar);
         mRecyclerView = (RecyclerView) findViewById(R.id.rl_set_of_pic);
         mRecyclerView.setLayoutManager(new GridLayoutManager(mRecyclerView.getContext(), 1));
@@ -117,16 +123,28 @@ public class SetOfPicActivity extends BaseActivity implements View.OnClickListen
             setOfPicAdapter.setOnItemClickListener(new SetOfPicAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
-                    Intent intent = new Intent(SetOfPicActivity.this, ShowBigPicActivity.class);
-                    intent.putExtra("url", setOfPicInfoBeen.get(position).getPic_url());
-                    startActivity(intent);
+
+                    if (view.getId() == R.id.linlay_download) {
+
+
+                        startDownload(position);
+                        Toast.makeText(SetOfPicActivity.this, "已保存", Toast.LENGTH_SHORT).show();
+
+                    } else {
+
+
+                        Intent intent = new Intent(SetOfPicActivity.this, ShowBigPicActivity.class);
+                        intent.putExtra("url", setOfPicInfoBeen.get(position).getPic_url());
+                        startActivity(intent);
+                    }
+
+
                 }
 
                 @Override
                 public void onItemLongClick(View view, int position) {
 
 
-                    showDialog("是否保存？", "保存位置：sdcard/爱妹纸", position);
                 }
             });
 
@@ -147,6 +165,7 @@ public class SetOfPicActivity extends BaseActivity implements View.OnClickListen
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     1);
         } else {
+
             mkDir();
         }
     }
@@ -180,8 +199,12 @@ public class SetOfPicActivity extends BaseActivity implements View.OnClickListen
             for (int i = 0; i < setOfPicInfoBeen.size(); i++) {
 
                 try {
+
+
                     Thread.sleep(200);
+
                     startDownload(i);
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -194,8 +217,11 @@ public class SetOfPicActivity extends BaseActivity implements View.OnClickListen
 
 
     public void startDownload(int position) {
+
         String url = setOfPicInfoBeen.get(position).getPic_url();
+
         int start = url.lastIndexOf("/");
+
         String fileName = url.substring(start + 1, url.length());
 
         downloadUtils = new DownloadUtils(dir, title + fileName);
@@ -209,8 +235,14 @@ public class SetOfPicActivity extends BaseActivity implements View.OnClickListen
                                            @NonNull int[] grantResults) {
 
         if (requestCode == 1) {
+
+
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+
                 mkDir();
+
+
             } else {
 
                 Toast.makeText(SetOfPicActivity.this, "权限申请失败", Toast.LENGTH_SHORT).show();
@@ -236,9 +268,6 @@ public class SetOfPicActivity extends BaseActivity implements View.OnClickListen
                     Toast.makeText(SetOfPicActivity.this, "添加任务", Toast.LENGTH_SHORT).show();
                     downMore();
                     Toast.makeText(SetOfPicActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
-                } else {
-                    startDownload(index);
-                    Toast.makeText(SetOfPicActivity.this, "已保存", Toast.LENGTH_SHORT).show();
                 }
 
 

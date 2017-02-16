@@ -7,6 +7,11 @@ package com.crcker.aimeizhi.constant;
 
 public class Constant {
 
+    public static String SPNAME ="config";
+
+    public static String IS_SHOW_DIALOG = "isShowDialog";
+
+
     public static int CONNECT_SUCCESS = 0;
 
     //首页

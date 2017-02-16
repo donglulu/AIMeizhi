@@ -28,7 +28,7 @@
                 android:layout_width="150dp"
                 android:layout_height="100dp"
                 android:scaleType="fitXY"
-                android:src="@mipmap/bg_other" />
+                android:src="@drawable/app_icon" />
 
             <TextView
                 android:id="@+id/tv_lable_item"

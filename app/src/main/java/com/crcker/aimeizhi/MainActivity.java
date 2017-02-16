@@ -1,24 +1,24 @@
 package com.crcker.aimeizhi;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.crcker.aimeizhi.adapter.MyPagerAdapter;
 import com.crcker.aimeizhi.fragment.HotFragment;
 import com.crcker.aimeizhi.fragment.LableFragment;
 import com.crcker.aimeizhi.fragment.MainFragment;
 import com.crcker.aimeizhi.fragment.RecommedFragment;
 import com.crcker.aimeizhi.view.About;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadImages(ImageView imageView, String url) {
-        Picasso.with(MainActivity.this)
+        Glide.with(MainActivity.this)
                 .load(url).into(imageView);
     }
 

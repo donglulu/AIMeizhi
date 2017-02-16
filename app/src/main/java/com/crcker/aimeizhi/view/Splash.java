@@ -1,14 +1,17 @@
 package com.crcker.aimeizhi.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.crcker.aimeizhi.MainActivity;
 import com.crcker.aimeizhi.R;
 
@@ -33,18 +36,49 @@ public class Splash extends Activity {
 
         iv_splash = (ImageView) findViewById(R.id.iv_splash);
 
-        Glide.with(this).load("http://img.mmjpg.com/2016/557/1.jpg").into(iv_splash);
+
+        if (isNetWorkAvailable() == true) {
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    enterHomeActivity();
+                }
+            }, 2000);
+
+        } else {
 
 
-        new Handler().postDelayed(new Runnable() {
+            Toast.makeText(this, "请检查网络,即将退出", Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(new Runnable() {
 
-            @Override
-            public void run() {
-                enterHomeActivity();
-            }
-        }, 2000);
+                @Override
+                public void run() {
+
+                    finish();
+                }
+            }, 2000);
+        }
+
+
     }
 
+    public boolean isNetWorkAvailable() {
+        ConnectivityManager manager = (ConnectivityManager) this
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager != null) {
+            NetworkInfo info = manager.getActiveNetworkInfo();
+            if (info != null && info.isConnected()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
     private void enterHomeActivity() {
         Intent intent = new Intent(this, MainActivity.class);

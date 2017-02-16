@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.crcker.aimeizhi.R;
@@ -41,12 +42,22 @@ public class SetOfPicAdapter extends RecyclerView.Adapter<SetOfPicAdapter.MyView
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
+
         Glide.with(mContext).load(setOfPicInfoBeen.get(position).getPic_url()).into(holder.iv);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+
+        holder.iv_down.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = holder.getLayoutPosition();
+                onItemClickListener.onItemClick(holder.iv_down, position);
+            }
+        });
+
+        holder.iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int position = holder.getLayoutPosition();
-                onItemClickListener.onItemClick(holder.itemView, position);
+                onItemClickListener.onItemClick(holder.iv, position);
             }
         });
 
@@ -70,9 +81,12 @@ public class SetOfPicAdapter extends RecyclerView.Adapter<SetOfPicAdapter.MyView
     class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView iv;
 
+        LinearLayout iv_down;
+
         public MyViewHolder(View itemView) {
             super(itemView);
             iv = (ImageView) itemView.findViewById(R.id.iv_set_of_pic);
+            iv_down = (LinearLayout) itemView.findViewById(R.id.linlay_download);
         }
     }
 
