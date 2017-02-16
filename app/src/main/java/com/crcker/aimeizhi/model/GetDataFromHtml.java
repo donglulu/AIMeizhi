@@ -32,27 +32,29 @@ public class GetDataFromHtml {
     //获取首页数据
     public ArrayList<PicInfoBean> getHomeData(int pages, boolean b, String url) {
 
-
+        String Totalpages = "1";
         Document content = null;
-
         try {
             if (b == true) {
-
                 content = Jsoup.connect(url).timeout(5000).post();
             } else {
-
-                content = Jsoup.connect(url + pages).timeout(5000).post();
+                content = Jsoup.connect(url + "/" + pages).timeout(5000).post();
             }
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        Log.d("msg", pages + "页数");
-
         Elements element = content.select("div.pic");
 
+        Document pageContent = Jsoup.parse(element.toString());
+
+        if (url != Constant.HOT_ADDRESS) {
+
+            //获取页码
+            Elements page = pageContent.select("em.info");
+            String pageEle = page.text();
+            Totalpages = pageEle.substring(1, pageEle.length() - 1);
+
+        }
         Document picContent = Jsoup.parse(element.toString());
 
         Elements Li = picContent.getElementsByTag("li");
@@ -75,6 +77,8 @@ public class GetDataFromHtml {
             picInfoBean.setPicTitle(li.select("img").attr("alt"));
             //缩略图
             picInfoBean.setPicUrl(li.select("img").attr("src"));
+            picInfoBean.setPages(Totalpages);
+            System.out.print(picInfoBean.toString());
             picInfoBeens.add(picInfoBean);
         }
 
@@ -130,8 +134,12 @@ public class GetDataFromHtml {
         Elements element = content.select("div.content");
         //获取页码
         Elements page = content.select("div.page");
+
+
         int endIndex = page.text().indexOf("全");
         int startIndex = page.text().indexOf("6");
+
+
         //分割页码 取到最后一页
 
         int pages = Integer.parseInt(page.text().substring(startIndex + 1, endIndex));

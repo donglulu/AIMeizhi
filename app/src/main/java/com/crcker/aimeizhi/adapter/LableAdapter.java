@@ -1,6 +1,7 @@
 package com.crcker.aimeizhi.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +49,11 @@ public class LableAdapter extends RecyclerView.Adapter<LableAdapter.MyViewHolder
 
         holder.tv.setText(lableInfoBeen.get(position).getTitle() + "(" + lableInfoBeen.get(position).getPicCount() + ")");
 
+        holder.cardView.setRadius(8);//设置图片圆角的半径大小
+
+        holder.cardView.setCardElevation(8);//设置阴影部分大小
+
+        holder.cardView.setContentPadding(5, 5, 5, 5);//设置图片距离阴影大小
         Glide.with(mContext).load(lableInfoBeen.get(position).getLable_pic_url())
                 .into(holder.iv);
         holder.itemView.setTag(position);
@@ -73,11 +79,13 @@ public class LableAdapter extends RecyclerView.Adapter<LableAdapter.MyViewHolder
 
         TextView tv;
         ImageView iv;
+        CardView cardView;
 
         public MyViewHolder(View view) {
             super(view);
             tv = (TextView) view.findViewById(R.id.tv_lable_item);
             iv = (ImageView) view.findViewById(R.id.iv_lable_item);
+            cardView = (CardView) view.findViewById(R.id.cardView);
         }
     }
 

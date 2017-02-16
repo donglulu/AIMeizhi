@@ -7,38 +7,6 @@
     android:fitsSystemWindows="true"
     tools:context="com.crcker.aimeizhi.view.ShowBigPicActivity">
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorAccent"
-            app:popupTheme="@style/PopupOverlay" >
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:layout_marginRight="15dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@mipmap/download"
-                    />
-
-            </RelativeLayout>
-
-
-
-        </android.support.v7.widget.Toolbar>
-
-    </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_show_big_pic" />
 

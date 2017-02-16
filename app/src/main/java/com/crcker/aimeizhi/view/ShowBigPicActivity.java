@@ -1,14 +1,18 @@
 package com.crcker.aimeizhi.view;
 
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.crcker.aimeizhi.R;
 import com.crcker.aimeizhi.base.BaseActivity;
 import com.crcker.aimeizhi.view.ScaleVIew.ScaleView;
 import com.squareup.picasso.Picasso;
 
-public class ShowBigPicActivity extends BaseActivity {
+public class ShowBigPicActivity extends AppCompatActivity {
 
     private String url = "http://img.mmjpg.com/2016/557/1.jpg";
     private ScaleView mImageView;
@@ -16,6 +20,9 @@ public class ShowBigPicActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_show_big_pic);
         mImageView = (ScaleView) findViewById(R.id.iv_bigpic);
 
@@ -23,8 +30,6 @@ public class ShowBigPicActivity extends BaseActivity {
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("大图");
-        setSupportActionBar(toolbar);
 
     }
 

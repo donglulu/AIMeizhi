@@ -15,6 +15,6 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
         GetDataFromHtml dataFromHtml = new GetDataFromHtml();
-        dataFromHtml.getHomeData();
+        dataFromHtml.getHomeData(0,true,"http://www.mmjpg.com/tag/xinggan");
     }
 }

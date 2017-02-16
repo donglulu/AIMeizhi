@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">AiMeiZhi</string>
-    <string name="title_activity_show_big_pic">ShowBigPicActivity</string>
-    <string name="title_activity_set_of_pic">SetOfPicActivity</string>
-    <string name="title_activity_default">DefaultActivity</string>
+    <string name="app_name">爱妹纸</string>
+    <string name="title_activity_show_big_pic"></string>
+    <string name="title_activity_set_of_pic"></string>
+    <string name="title_activity_default"></string>
+    <string name="title_activity_about">About</string>
 </resources>

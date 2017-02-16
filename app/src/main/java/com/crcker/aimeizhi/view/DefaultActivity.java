@@ -4,16 +4,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.crcker.aimeizhi.R;
 import com.crcker.aimeizhi.adapter.RecyclerAdapter;
 import com.crcker.aimeizhi.base.BaseActivity;
 import com.crcker.aimeizhi.bean.PicInfoBean;
+import com.crcker.aimeizhi.constant.Constant;
+import com.crcker.aimeizhi.fragment.MainFragment;
 import com.crcker.aimeizhi.model.GetDataFromHtml;
 
 import java.util.ArrayList;
@@ -30,72 +36,24 @@ public class DefaultActivity extends BaseActivity {
     private ArrayList<PicInfoBean> picInfoBeen;
     //是否是第一次进入
     private boolean isFrist = true;
+
+    boolean isLoading;
+    private SwipeRefreshLayout mRefreshLayout;
+
     //续加载的数据
     private Bundle mBundle;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_default);
-        initView();
-        initData();
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(mBundle.getString("title"));
-        setSupportActionBar(toolbar);
-
-    }
-
-    private void initData() {
-        mBundle = getIntent().getExtras();
-        update();
-    }
-
-
-    private void update() {
-        picInfoBeen = new ArrayList<>();
-        UpdataTask updateTextTask = new UpdataTask(this, pages);
-        updateTextTask.execute();
-
-
-    }
-
-
-    class UpdataTask extends AsyncTask<Void, Integer, ArrayList<PicInfoBean>> {
-        private Context context;
-
-
-        UpdataTask(Context context, int pages) {
-            dataFromHtml = new GetDataFromHtml();
-            this.context = context;
-
-        }
-
-
-        /**
-         * 后台运行的方法，可以运行非UI线程，可以执行耗时的方法
-         */
+    private Handler handler = new Handler() {
         @Override
-        protected ArrayList<PicInfoBean> doInBackground(Void... params) {
+        public void handleMessage(Message msg) {
 
-            return dataFromHtml.getHomeData(pages, isFrist, mBundle.getString("url"));
-        }
+            if (mAdapter == null) {
 
-        /**
-         * 运行在ui线程中，在doInBackground()执行完毕后执行
-         */
-        @Override
-        protected void onPostExecute(final ArrayList<PicInfoBean> been) {
-
-            super.onPostExecute(picInfoBeen);
-
-
-            picInfoBeen.addAll(been);
-
-            Log.d("msg", picInfoBeen.size() + "个数");
-
-            mAdapter = new RecyclerAdapter(mRecyclerView.getContext(), picInfoBeen);
-            mRecyclerView.setAdapter(mAdapter);
+                mAdapter = new RecyclerAdapter(mRecyclerView.getContext(), picInfoBeen);
+                mRecyclerView.setAdapter(mAdapter);
+            }
+            mAdapter.notifyDataSetChanged();
+            mRefreshLayout.setRefreshing(false);
+            mAdapter.notifyItemRemoved(mAdapter.getItemCount());
 
 
             mAdapter.setOnItemClickListener(new RecyclerAdapter.OnItemClickListener() {
@@ -113,16 +71,116 @@ public class DefaultActivity extends BaseActivity {
                 }
             });
 
-
         }
+    };
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_default);
+        initView();
+        initData();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(mBundle.getString("title"));
+        setSupportActionBar(toolbar);
+
+    }
+
+    private void initData() {
+        picInfoBeen = new ArrayList<>();
+        mBundle = getIntent().getExtras();
+        new MyThread(mBundle.getString("url")).start();
     }
 
 
     private void initView() {
         mRecyclerView = (RecyclerView) findViewById(R.id.rl_default);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        final GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(layoutManager);
+        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refreshLayout);
 
+        mRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshLayout.setRefreshing(true);
+            }
+        });
+
+
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+
+            }
+        });
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+                if (lastVisibleItemPosition + 1 == mAdapter.getItemCount()) {
+
+
+                    boolean isRefreshing = mRefreshLayout.isRefreshing();
+
+                    if (isRefreshing) {
+
+                        mAdapter.notifyItemRemoved(mAdapter.getItemCount());
+                        return;
+                    }
+                    pages++;
+                    isLoading = true;
+                    isFrist = false;
+
+                    if (pages <= Integer.parseInt(picInfoBeen.get(0).getPages())) {
+                        Toast.makeText(DefaultActivity.this, "没有更多了", Toast.LENGTH_SHORT).show();
+                        new MyThread(mBundle.getString("url")).start();
+                    }
+
+
+
+                }
+            }
+        });
+
+
+    }
+
+
+    class MyThread extends Thread {
+        String url;
+
+        public MyThread(String url) {
+            this.url = url;
+        }
+
+
+        @Override
+        public void run() {
+            super.run();
+            if (isFrist == true) {
+
+                picInfoBeen.addAll(dataFromHtml.getHomeData(pages, isFrist, url));
+                handler.sendEmptyMessage(0);
+            } else {
+                isLoading = false;
+
+                picInfoBeen.addAll(dataFromHtml.getHomeData(pages, isFrist, url));
+
+                handler.sendEmptyMessage(0);
+            }
+
+
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.crcker.aimeizhi;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -16,6 +17,7 @@ import com.crcker.aimeizhi.fragment.HotFragment;
 import com.crcker.aimeizhi.fragment.LableFragment;
 import com.crcker.aimeizhi.fragment.MainFragment;
 import com.crcker.aimeizhi.fragment.RecommedFragment;
+import com.crcker.aimeizhi.view.About;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         mCoordinatorTabLayout = (CoordinatorTabLayout) findViewById(R.id.coordinatortablayout);
         mCoordinatorTabLayout.setTitle("爱妹纸")
                 .setBackEnable(false)
+
                 .setContentScrimColorArray(mColorArray)
                 .setLoadHeaderImagesListener(new LoadHeaderImagesListener() {
                     @Override
@@ -103,8 +106,9 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.action_about:
-                break;
-            case R.id.action_about_me:
+
+            startActivity(new Intent(this, About.class));
+
                 break;
         }
         return super.onOptionsItemSelected(item);

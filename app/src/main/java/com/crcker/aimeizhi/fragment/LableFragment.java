@@ -63,7 +63,7 @@ public class LableFragment extends BaseFragment {
          */
         @Override
         protected void onPreExecute() {
-            Toast.makeText(context, "开始执行", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "抓取数据", Toast.LENGTH_SHORT).show();
         }
 
         /**

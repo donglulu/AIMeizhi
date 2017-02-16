@@ -1,6 +1,7 @@
 package com.crcker.aimeizhi.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,6 +74,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 ((MyViewHolder) holder).tv.setText(picInfoBeen.get(position).getPicTitle());
 
+                ((MyViewHolder) holder).cardView.setRadius(8);//设置图片圆角的半径大小
+
+                ((MyViewHolder) holder).cardView.setCardElevation(8);//设置阴影部分大小
+
+                ((MyViewHolder) holder).cardView.setContentPadding(5, 5, 5, 5);//设置图片距离阴影大小
+
                 Glide.with(mContext).load(picInfoBeen.get(position).getPicUrl())
                         .into(((MyViewHolder) holder).iv);
                 holder.itemView.setTag(position);
@@ -100,11 +107,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public int getItemViewType(int position) {
 
-        if (position + 1 == getItemCount()) {
-            return TYPE_FOOTER;
-        } else {
+
             return TYPE_ITEM;
-        }
+
     }
 
 
@@ -117,11 +122,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tv;
         ImageView iv;
+        CardView cardView;
 
         public MyViewHolder(View view) {
             super(view);
             tv = (TextView) view.findViewById(R.id.tv_item);
             iv = (ImageView) view.findViewById(R.id.iv_item);
+            cardView = (CardView) view.findViewById(R.id.cardView);
+
         }
     }
 

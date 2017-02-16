@@ -14,13 +14,44 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@android:color/holo_red_light"
-            app:popupTheme="@style/PopupOverlay" />
+            app:popupTheme="@style/PopupOverlay">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="100dp"
+                    android:ellipsize="marquee"
+                    android:gravity="left"
+                    android:scrollbars="vertical"
+                    android:singleLine="true"
+                    android:text="少时诵诗书所所所所所少时诵诗书所所少时诵诗书所"
+                    android:textColor="#ffff"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:id="@+id/iv_download_more"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:src="@mipmap/download" />
+
+            </RelativeLayout>
+
+
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
+
 
     <include layout="@layout/content_set_of_pic" />
 

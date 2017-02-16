@@ -18,9 +18,9 @@ import java.util.ArrayList;
  * 邮箱：635281462@qq.com
  */
 
-public class SetOfPicAdapter extends RecyclerView.Adapter<SetOfPicAdapter.MyViewHolder> implements View.OnClickListener {
+public class SetOfPicAdapter extends RecyclerView.Adapter<SetOfPicAdapter.MyViewHolder> {
     private Context mContext;
-    private OnRecyclerViewItemClickListener mOnItemClickListener = null;
+    private OnItemClickListener onItemClickListener;
     private ArrayList<SetOfPicInfoBean> setOfPicInfoBeen;
 
     public SetOfPicAdapter(Context context, ArrayList<SetOfPicInfoBean> datas) {
@@ -28,37 +28,42 @@ public class SetOfPicAdapter extends RecyclerView.Adapter<SetOfPicAdapter.MyView
         setOfPicInfoBeen = datas;
     }
 
-    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
-        this.mOnItemClickListener = listener;
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.set_of_pic_item, parent, false);
-        view.setOnClickListener(this);
         MyViewHolder holder = new MyViewHolder(view);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, int position) {
         Glide.with(mContext).load(setOfPicInfoBeen.get(position).getPic_url()).into(holder.iv);
-        holder.itemView.setTag(position);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = holder.getLayoutPosition();
+                onItemClickListener.onItemClick(holder.itemView, position);
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                int position = holder.getLayoutPosition();
+                onItemClickListener.onItemLongClick(holder.itemView, position);
+                return false;
+            }
+        });
     }
+
 
     @Override
     public int getItemCount() {
         return setOfPicInfoBeen.size();
-    }
-
-    @Override
-    public void onClick(View view) {
-
-        if (mOnItemClickListener != null) {
-
-            //注意这里使用getTag方法获取数据
-            mOnItemClickListener.onItemClick(view, (Integer) view.getTag());
-        }
     }
 
 
@@ -71,8 +76,9 @@ public class SetOfPicAdapter extends RecyclerView.Adapter<SetOfPicAdapter.MyView
         }
     }
 
-    public static interface OnRecyclerViewItemClickListener {
-
+    public interface OnItemClickListener {
         void onItemClick(View view, int position);
+
+        void onItemLongClick(View view, int position);
     }
 }

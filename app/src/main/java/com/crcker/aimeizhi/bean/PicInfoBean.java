@@ -15,6 +15,16 @@ public class PicInfoBean {
     //套图地址
     private String url;
 
+    public String getPages() {
+        return pages;
+    }
+
+    public void setPages(String pages) {
+        this.pages = pages;
+    }
+
+    private String pages;
+
     public String getUrl() {
         return url;
     }
@@ -29,6 +39,8 @@ public class PicInfoBean {
                 "picUrl='" + picUrl + '\'' +
                 ", picTitle='" + picTitle + '\'' +
                 ", seeCount='" + seeCount + '\'' +
+                ", url='" + url + '\'' +
+                ", pages='" + pages + '\'' +
                 '}';
     }
 
